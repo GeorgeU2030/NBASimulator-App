@@ -1,0 +1,5 @@
+:host ::ng-deep .p-button {
+    @apply bg-primary;
+    padding: 8px 18px;
+    border: 1px solid red;
+}
