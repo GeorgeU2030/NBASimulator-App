@@ -9,4 +9,18 @@
         <p-toast position="bottom-right"/>
         <p-button label="New Season" icon="pi pi-plus-circle" [rounded]="true" (click)="newSeason()"/>
     </div>
+    <div>
+        @if(listSeasons.length === 0){
+            <div class="flex justify-center items-center h-96 mt-4">
+                <p class="text-primary font-semibold text-2xl">No seasons found</p>
+            </div>
+        }
+        @else {
+            @for (season of listSeasons; track season.seasonId){
+                <div>
+                    {{season.edition}}
+                </div>
+            }
+        }
+    </div>
 </div>

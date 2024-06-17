@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { Season } from '../interfaces/Season';
+import { SeasonTeam } from '../interfaces/SeasonTeam';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class SeasonService {
 
   getSeasonById(seasonId:number):Observable<Season>{
     return this.http.get<Season>(this.apiUrl + "/" + seasonId);
+  }
+
+  addTeamtoSeason(seasonId:number, seasonTeam: SeasonTeam):Observable<Season>{
+    return this.http.put<Season>(this.apiUrl + "/" + seasonId , seasonTeam);
   }
   
 }
