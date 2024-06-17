@@ -1,0 +1,26 @@
+:host ::ng-deep .p-button {
+    @apply bg-primary;
+    padding: 8px 18px;
+    border: 1px solid red;
+}
+
+.card {
+    margin-left: 5px;
+    width: 150px;
+    border: 2px solid #1F4E8C;
+    @apply bg-slate-300 rounded-lg ;
+}
+
+.cardh:hover {
+    @apply bg-slate-400;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .card {
+        margin-left: 40px;
+        width: 150px;
+        border: 2px solid #1F4E8C;
+        @apply bg-slate-300 rounded-lg ;
+    }
+}
