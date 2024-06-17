@@ -1,1 +1,12 @@
-<p>seasons works!</p>
+<div class="min-h-screen bg-slate-100">
+    <nav class="flex justify-center bg-primary">
+        <div class="flex items-center justify-center">
+            <img src="/nba.ico" class="w-18 h-20"/>
+            <h1 class="text-slate-100">Seasons</h1>
+        </div>
+    </nav>
+    <div class="flex justify-center mt-4">
+        <p-toast position="bottom-right"/>
+        <p-button label="New Season" icon="pi pi-plus-circle" [rounded]="true" (click)="newSeason()"/>
+    </div>
+</div>
