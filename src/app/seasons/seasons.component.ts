@@ -5,6 +5,7 @@ import { ToastModule } from 'primeng/toast';
 import { SeasonService } from '../services/season.service';
 import { Season } from '../interfaces/Season';
 import { TeamService } from '../services/team.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seasons',
@@ -20,7 +21,8 @@ export class SeasonsComponent implements OnInit {
   constructor(
     private message: MessageService,
     private seasonService: SeasonService,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private router: Router
   ) { }
 
   newSeason(){
@@ -78,6 +80,10 @@ export class SeasonsComponent implements OnInit {
     this.seasonService.getSeasons().subscribe(data => {
       this.listSeasons = data;
     });
+  }
+
+  navigate(seasonId: number){
+    this.router.navigate(['/season', seasonId]);
   }
 
   ngOnInit(): void {

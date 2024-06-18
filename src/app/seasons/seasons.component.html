@@ -16,11 +16,47 @@
             </div>
         }
         @else {
-            @for (season of listSeasons; track season.seasonId){
-                <div>
-                    {{season.edition}}
+            <div class="flex flex-col justify-center items-center">
+                <div class="w-5/6 overflow-auto">
+                    <table class="mt-5 w-full ">
+                        <thead>
+                            <tr>
+                                <th class="min-w-24 bg-primary text-white text-lg h-12">Edition</th>
+                                <th class="min-w-24 bg-primary text-white text-lg h-12"></th>
+                                <th class="min-w-60 bg-primary text-white text-lg h-12">Winner</th>
+                                <th class="min-w-20 bg-primary text-white text-lg h-12"></th>
+                                <th class="min-w-60 bg-primary text-white text-lg h-12">Subchampion</th>
+                                <th class="min-w-12 bg-primary text-white text-lg h-12"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="h-16 bg-gray-300 ">
+                                @for(season of listSeasons; track season.seasonId){
+                                    <td class="text-center text-2xl text-primary font-bold">{{ season.edition }}</td>
+                                    
+                                    @if(season.champion){
+                                        <td><img [src]="season.champion.logo" alt="Logo Winner"></td>
+                                        <td class="text-center">{{season.champion.name}}</td>
+                                    }
+                                    @else{
+                                        <td class="flex justify-center items-center"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
+                                        <td class="text-center">No champion yet</td>
+                                    }
+                                    @if(season.subChampion){
+                                        <td><img [src]="season.subChampion.logo" alt="Logo Subchampion"></td>
+                                        <td class="text-center">{{season.subChampion.name}}</td>
+                                    }
+                                    @else{
+                                        <td class="flex justify-center items-center"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
+                                        <td class="text-center">No subchampion yet</td>
+                                    }
+                                    <td class="flex justify-center items-center" (click)="navigate(season.seasonId)"><img src="/basket.png" class="w-10 h-10 mt-1"/></td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            }
+            </div>
         }
     </div>
 </div>
