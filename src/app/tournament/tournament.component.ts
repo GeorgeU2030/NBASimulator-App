@@ -3,11 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { SeasonService } from '../services/season.service';
 import { SeasonTeam } from '../interfaces/SeasonTeam';
 import { Season } from '../interfaces/Season';
+import { nbaTournament } from '../logic/nbatournament';
+
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tournament',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './tournament.component.html',
   styleUrl: './tournament.component.css'
 })
@@ -18,6 +21,7 @@ export class TournamentComponent implements OnInit {
   westTeams : SeasonTeam[] = [];
   season!: Season;
   seasonId!: number ;
+  isOnPlayOffs = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,6 +35,17 @@ export class TournamentComponent implements OnInit {
       this.eastTeams = this.listTeams.filter(team => team.conference === 'Eastern');
       this.westTeams = this.listTeams.filter(team => team.conference === 'Western');
     })
+  }
+
+  verifyPlayOffs(){
+    if(this.listTeams[0].percentage > 0 ){
+      this.isOnPlayOffs = true;
+    }
+  }
+
+  async start(){
+    await nbaTournament(this.eastTeams, this.westTeams);
+    this.verifyPlayOffs();
   }
 
   ngOnInit() {
