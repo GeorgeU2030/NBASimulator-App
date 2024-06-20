@@ -6,6 +6,7 @@ import { Season } from '../interfaces/Season';
 import { nbaTournament } from '../logic/nbatournament';
 
 import { CommonModule } from '@angular/common';
+import { SeasonteamService } from '../services/seasonteam.service';
 
 @Component({
   selector: 'app-tournament',
@@ -25,15 +26,17 @@ export class TournamentComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
+    private seasonTeamService: SeasonteamService
   ) {}
 
   loadTeams(){
     this.seasonService.getSeasonById(this.seasonId).subscribe(data => {
-      this.listTeams = data.teams ? data.teams : [];
+      this.listTeams = data.teams ? data.teams.sort((a, b) => b.percentage - a.percentage) : [];
       this.season = data;
       this.eastTeams = this.listTeams.filter(team => team.conference === 'Eastern');
       this.westTeams = this.listTeams.filter(team => team.conference === 'Western');
+      this.verifyPlayOffs();
     })
   }
 
@@ -44,7 +47,12 @@ export class TournamentComponent implements OnInit {
   }
 
   async start(){
-    await nbaTournament(this.eastTeams, this.westTeams);
+    this.listTeams = await nbaTournament(this.eastTeams, this.westTeams);
+
+    this.listTeams.forEach(team => {
+      this.seasonTeamService.updateTeam(team.seasonTeamId, team).subscribe()
+    });
+
     this.verifyPlayOffs();
   }
 

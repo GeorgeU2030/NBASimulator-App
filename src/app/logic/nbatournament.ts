@@ -49,6 +49,8 @@ export async function nbaTournament(eastTeams: SeasonTeam[], westTeams: SeasonTe
     joinTeams = joinTeams.concat(atlantic, central, southeast, northwest, southwest, pacific);
     shuffleArray(joinTeams);
     anyteam(joinTeams);
+
+    return joinTeams;
 }
 
 function samedivision(teams: SeasonTeam[]){
