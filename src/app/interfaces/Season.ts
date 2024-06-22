@@ -1,6 +1,6 @@
+import { Match } from "./Match";
 import { SeasonTeam } from "./SeasonTeam";
 import { Team } from "./Team";
-
 
 export interface Season {
     seasonId: number,
@@ -11,5 +11,6 @@ export interface Season {
     championWest?: Team,
     semifinalEast?: Team,
     semifinalWest?: Team,
-    teams?: SeasonTeam[]
+    teams?: SeasonTeam[],
+    matches?: Match[],
 }

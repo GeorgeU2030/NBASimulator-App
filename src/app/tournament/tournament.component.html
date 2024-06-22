@@ -5,7 +5,7 @@
             <p class="text-red-600 text-lg font-bold ml-2">Edition @if(season){ {{season.edition}} }</p>
         </div>
     </div>
-    @if(!isOnPlayOffs){
+    @if(!isOnPlayIn){
         <div class="flex justify-center items-center mb-5">
             <button class="bg-primary text-white py-3 cursor-pointer font-bold text-lg border-2 border-red-600 rounded-lg px-16" (click)="start()">Start</button>
         </div>
@@ -96,6 +96,19 @@
                             }
                     </tbody>
                 </table>
+            }
+        </div>
+    </div>
+    <div class="flex flex-col justify-center items-center mb-10">
+        <div class="mt-6">
+            @if(isOnPlayIn && !isOnPlayOffs){
+                <button class="bg-primary rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" (click)="startPlayIn()">Start Play In</button>
+            }
+            @if(isOnPlayOffs){
+                <div>
+                    <h2 class="text-2xl text-primary font-bold">Play In</h2>
+                </div>
+                
             }
         </div>
     </div>

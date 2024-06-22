@@ -18,4 +18,8 @@ export class TeamService {
     return this.http.get<Team[]>(this.apiUrl);
   }
 
+  getTeamByName(name:string):Observable<Team>{
+    return this.http.get<Team>(this.apiUrl + '/getByName/' + name);
+  }
+
 }
