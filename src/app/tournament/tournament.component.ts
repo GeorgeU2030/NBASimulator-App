@@ -25,14 +25,18 @@ export class TournamentComponent implements OnInit {
   listTeams : SeasonTeam[] = [];
   eastTeams : SeasonTeam[] = [];
   westTeams : SeasonTeam[] = [];
-  playoffTeamsEast : Team[] = [];
-  playoffTeamsWest : Team[] = [];
   playInMatchesEast : Match[] = [];
   playInMatchesWest : Match[] = [];
+  FirstRoundMatches : Match[] = [];
+  SecondRoundMatches : Match[] = [];
+  FinalConferencesEast : Match[] = [];
+  FinalConferencesWest : Match[] = [];
+  FinalsNBA : Match[] = [];
   season!: Season;
   seasonId!: number ;
   isOnPlayOffs = false;
   isOnPlayIn = false;
+  isOnFinals = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,6 +62,7 @@ export class TournamentComponent implements OnInit {
       this.westTeams = this.listTeams.filter(team => team.conference === 'Western');
       this.verifyPlayIn();
       this.verifyPlayOffs();
+      this.verifyFinals();
       this.loadMatches();
     })
   }
@@ -67,11 +72,16 @@ export class TournamentComponent implements OnInit {
       const sortedMatches = this.season.matches.sort((a, b) => a.matchId - b.matchId);
       this.playInMatchesEast = sortedMatches.slice(0, 3);
       this.playInMatchesWest = sortedMatches.slice(3, 6);
+      this.FirstRoundMatches = sortedMatches.filter(match => match.phase === 1);
+      this.SecondRoundMatches = sortedMatches.filter(match => match.phase === 2);
+      this.FinalConferencesEast = sortedMatches.filter(match => match.phase === 3);
+      this.FinalConferencesWest = sortedMatches.filter(match => match.phase === 4);
+      this.FinalsNBA = sortedMatches.filter(match => match.phase === 5);
     }
   }
 
   verifyPlayIn(){
-    if(this.listTeams[0].percentage > 0 ){
+    if(this.listTeams[0].percentage > 0 && this.season.matches?.length === 0){
       this.isOnPlayIn = true;
     }
   }
@@ -80,6 +90,14 @@ export class TournamentComponent implements OnInit {
     if(this.season.matches){
       if(this.season.matches.length > 0 && this.season.matches.length < 7){
         this.isOnPlayOffs = true;
+      }
+    }
+  }
+
+  verifyFinals(){
+    if(this.season.matches){
+      if(this.season.matches.length > 6 ){
+        this.isOnFinals = true;
       }
     }
   }
@@ -94,10 +112,213 @@ export class TournamentComponent implements OnInit {
     this.verifyPlayIn();
   }
 
-  async PlayOffTeams(){
-    const topEastTeams = this.eastTeams.slice(0, 6);
-    const topWestTeams = this.westTeams.slice(0, 6);
+  async PlayOffTeams(topEastTeams: SeasonTeam[]){
     
+    let matches = this.season.matches?.sort((a, b) => a.matchId - b.matchId);
+    let smatches = matches ? [matches[0], matches[2]] : [];
+
+    let winningPlayIn = smatches?.map(match => {
+      return match.homeScore > match.visitorScore ? match.homeTeam?.name : match.visitorTeam?.name;
+    })
+
+    let eastWinningTeams;
+    if(topEastTeams[0].conference == 'Eastern'){
+      eastWinningTeams = this.eastTeams.filter(team => winningPlayIn?.includes(team.name));
+      topEastTeams.push(...eastWinningTeams);
+    }else {
+      eastWinningTeams = this.westTeams.filter(team => winningPlayIn?.includes(team.name));
+      topEastTeams.push(...eastWinningTeams);
+    }
+   
+    let nextPhase : SeasonTeam[] = [];
+    const matchups = [[0,7], [3,4], [1,6], [2,5]];
+
+    for(let matchup of matchups){
+      let i = matchup[0];
+      let j = matchup[1];
+      let winsTeam1 = 0;
+      let winsTeam2 = 0;
+
+      let teamhome = topEastTeams[i];
+      let teamvisitor = topEastTeams[j];
+
+      let team1,team2; 
+      if(teamhome && teamvisitor){
+        team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
+        team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
+      }
+
+
+      while ( winsTeam1 < 4 && winsTeam2 < 4){
+        let scores = matchnba();
+        let score1 = scores[0];
+        let score2 = scores[1];
+
+        let match = {
+          matchId: 0,
+          seasonId: this.seasonId,
+          homeTeamId: team1?.teamId ?? -1,
+          visitorTeamId: team2?.teamId ?? -1,
+          homeScore: score1,
+          visitorScore: score2,
+          phase: 1
+        };
+      
+        await this.createMatchAsync(this.matchService, match);
+        
+
+        if(score1 > score2){
+          winsTeam1++;
+        } else {
+          winsTeam2++;
+        }
+
+        if(winsTeam1 === 4){
+          nextPhase.push(teamhome);
+        } else if(winsTeam2 === 4){
+          nextPhase.push(teamvisitor);
+        }
+
+      }
+    }
+
+    let finalConference = [];
+
+    for(let i = 0; i < 4 ; i++){
+      let j = 3 - i;
+      let winsTeam1 = 0;
+      let winsTeam2 = 0;
+
+      let up = nextPhase[i];
+      let down = nextPhase[j];
+
+      let teamhome,teamvisitor;
+
+      if(down && up.percentage > down.percentage){
+        teamhome = up;
+        teamvisitor = down;
+      }else {
+        teamhome = down;
+        teamvisitor = up;
+      }
+      
+      let team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
+      let team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
+
+      while ( winsTeam1 < 4 && winsTeam2 < 4){
+        let scores = matchnba();
+        let score1 = scores[0];
+        let score2 = scores[1];
+
+        let match = {
+          matchId: 0,
+          seasonId: this.seasonId,
+          homeTeamId: team1.teamId,
+          visitorTeamId: team2.teamId,
+          homeScore: score1,
+          visitorScore: score2,
+          phase: 2
+        };
+      
+        await this.createMatchAsync(this.matchService, match);
+
+        if(score1 > score2){
+          winsTeam1++;
+        } else {
+          winsTeam2++;
+        }
+
+        if(winsTeam1 === 4){
+          finalConference.push(teamhome);
+        } else if(winsTeam2 === 4){
+          finalConference.push(teamvisitor);
+        }
+
+      }
+    }
+
+    
+      let phaseconference ;
+      if(finalConference[0].conference === 'Eastern'){
+        phaseconference = 3;
+      }else if(finalConference[0].conference === 'Western'){
+        phaseconference = 4;
+      }
+      let winsTeam1 = 0;
+      let winsTeam2 = 0;
+
+      let up = finalConference[0];
+      let down = finalConference[1];
+
+      let teamhome,teamvisitor;
+
+      if(up.percentage > down.percentage){
+        teamhome = up;
+        teamvisitor = down;
+      }else {
+        teamhome = down;
+        teamvisitor = up;
+      }
+      
+      let team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
+      let team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
+
+      while ( winsTeam1 < 4 && winsTeam2 < 4){
+        let scores = matchnba();
+        let score1 = scores[0];
+        let score2 = scores[1];
+
+        let match = {
+          matchId: 0,
+          seasonId: this.seasonId,
+          homeTeamId: team1.teamId,
+          visitorTeamId: team2.teamId,
+          homeScore: score1,
+          visitorScore: score2,
+          phase: phaseconference
+        };
+      
+        await this.createMatchAsync(this.matchService, match);
+
+        if(score1 > score2){
+          winsTeam1++;
+        } else {
+          winsTeam2++;
+        }
+
+        let conference = teamhome.conference;
+        if(conference === 'Eastern'){
+          if(winsTeam1 == 4) {
+            this.seasonService.addChampionEast(
+              this.seasonId,
+              team1.teamId,
+              team2.teamId
+            ).subscribe();
+          }else if(winsTeam2 == 4){
+            this.seasonService.addChampionEast(
+              this.seasonId,
+              team2.teamId,
+              team1.teamId
+            ).subscribe();
+          }
+        } else if (conference === 'Western'){
+          if(winsTeam1 == 4) {
+            this.seasonService.addChampionWest(
+              this.seasonId,
+              team1.teamId,
+              team2.teamId 
+            ).subscribe();
+          }else if(winsTeam2 == 4){
+            this.seasonService.addChampionWest(
+              this.seasonId,
+              team2.teamId,
+              team1.teamId
+            ).subscribe();
+          }
+        }
+      }
+
+      // Finish Conferences
   }
 
   async getTeamByNameAsync(teamService: TeamService, name: string): Promise<Team> {
@@ -109,11 +330,11 @@ export class TournamentComponent implements OnInit {
     });
   }
   
-  async createMatchAsync(matchService: MatchService, match: any): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async createMatchAsync(matchService: MatchService, match: Match): Promise<Match> {
+    return new Promise((resolve, reject) => {
       matchService.newMatch(match).subscribe({
-        next: () => resolve(),
-        error: (error) => reject(error)
+        next: resolve,
+        error: reject
       });
     });
   }
@@ -194,6 +415,11 @@ export class TournamentComponent implements OnInit {
     await this.playIn(westTeams);
   }
 
+  async generatePlayOffs(topEastTeams: SeasonTeam[], topWestTeams: SeasonTeam[]){
+    await this.PlayOffTeams(topEastTeams);
+    await this.PlayOffTeams(topWestTeams);
+  }
+
   startPlayIn(){
 
     const playInEast = this.eastTeams.slice(6, 10);
@@ -208,6 +434,18 @@ export class TournamentComponent implements OnInit {
 
     this.loadMatches();
 
+  }
+
+  startPlayOffs(){
+    
+    const topEastTeams = this.eastTeams.slice(0, 6);
+    const topWestTeams = this.westTeams.slice(0, 6);
+
+    this.generatePlayOffs(topEastTeams, topWestTeams);
+
+    this.isOnFinals = true;
+
+    this.cdr.detectChanges();
   }
 
   ngOnInit() {

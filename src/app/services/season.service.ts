@@ -31,4 +31,13 @@ export class SeasonService {
     return this.http.put<Season>(this.apiUrl + "/" + seasonId , seasonTeam);
   }
   
+  addChampionEast(seasonId: number, championEastId: number, semiFinalistEastId: number): Observable<Season> {
+    const url = `${this.apiUrl}/${seasonId}/chEast?championEastId=${championEastId}&semiFinalistEastId=${semiFinalistEastId}`;
+    return this.http.post<Season>(url, {}, {responseType: 'text' as 'json'});
+  }
+
+  addChampionWest(seasonId: number, championWestId: number, semiFinalistWestId: number): Observable<Season> {
+    const url = `${this.apiUrl}/${seasonId}/chWest?championWestId=${championWestId}&semiFinalistWestId=${semiFinalistWestId}`;
+    return this.http.post<Season>(url, {}, {responseType: 'text' as 'json'});
+  }
 }

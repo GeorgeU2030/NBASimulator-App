@@ -11,4 +11,5 @@ export interface Match {
     visitorTeam?: Team,
     homeScore: number,
     visitorScore: number,
+    phase?: number
 }
