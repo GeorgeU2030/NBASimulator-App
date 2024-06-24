@@ -5,7 +5,7 @@
             <p class="text-red-600 text-lg font-bold ml-2">Edition @if(season){ {{season.edition}} }</p>
         </div>
     </div>
-    @if(!isOnPlayIn){
+    @if(!isOnPlayIn && !isOnPlayOffs && !isOnFinals){
         <div class="flex justify-center items-center mb-5">
             <button class="bg-primary text-white py-3 cursor-pointer font-bold text-lg border-2 border-red-600 rounded-lg px-16" (click)="start()">Start</button>
         </div>
@@ -168,6 +168,10 @@
                 </div>
             }
 
+            <div class="mt-6">
+                <h2 class="text-2xl text-primary font-bold">Eastern Conference Finals</h2>
+            </div>
+
             @for(match of FinalConferencesEast; track match.matchId){
                 <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
                     <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
@@ -179,6 +183,10 @@
                     <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
                 </div>
             }
+
+            <div class="mt-6">
+                <h2 class="text-2xl text-red-600 font-bold">Western Conference Finals</h2>
+            </div>
 
             @for(match of FinalConferencesWest; track match.matchId){
                 <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">

@@ -115,19 +115,28 @@ export class TournamentComponent implements OnInit {
   async PlayOffTeams(topEastTeams: SeasonTeam[]){
     
     let matches = this.season.matches?.sort((a, b) => a.matchId - b.matchId);
-    let smatches = matches ? [matches[0], matches[2]] : [];
+
+    let smatches;
+
+    if(topEastTeams[0].conference == 'Eastern'){
+      smatches = matches ? [matches[0], matches[2]] : [];
+    } else {
+      smatches = matches ? [matches[3], matches[5]] : [];
+    }
 
     let winningPlayIn = smatches?.map(match => {
       return match.homeScore > match.visitorScore ? match.homeTeam?.name : match.visitorTeam?.name;
     })
 
     let eastWinningTeams;
+
     if(topEastTeams[0].conference == 'Eastern'){
       eastWinningTeams = this.eastTeams.filter(team => winningPlayIn?.includes(team.name));
       topEastTeams.push(...eastWinningTeams);
     }else {
       eastWinningTeams = this.westTeams.filter(team => winningPlayIn?.includes(team.name));
       topEastTeams.push(...eastWinningTeams);
+      
     }
    
     let nextPhase : SeasonTeam[] = [];
@@ -184,8 +193,8 @@ export class TournamentComponent implements OnInit {
 
     let finalConference = [];
 
-    for(let i = 0; i < 4 ; i++){
-      let j = 3 - i;
+    for(let i = 0; i < 4 ; i+=2){
+      let j = i+1;
       let winsTeam1 = 0;
       let winsTeam2 = 0;
 
@@ -194,7 +203,7 @@ export class TournamentComponent implements OnInit {
 
       let teamhome,teamvisitor;
 
-      if(down && up.percentage > down.percentage){
+      if(up && down && up.percentage > down.percentage){
         teamhome = up;
         teamvisitor = down;
       }else {
@@ -416,8 +425,21 @@ export class TournamentComponent implements OnInit {
   }
 
   async generatePlayOffs(topEastTeams: SeasonTeam[], topWestTeams: SeasonTeam[]){
-    await this.PlayOffTeams(topEastTeams);
-    await this.PlayOffTeams(topWestTeams);
+    try {
+      await this.PlayOffTeams(topEastTeams);
+      console.log('PlayOffs for East Teams finished');
+    } catch (error) {
+      console.error('Error generating playoffs for East Teams:', error);
+    }
+  
+    try {
+      await this.PlayOffTeams(topWestTeams);
+      console.log('PlayOffs for West Teams finished');
+    } catch (error) {
+      console.error('Error generating playoffs for West Teams:', error);
+    }
+  
+    
   }
 
   startPlayIn(){
@@ -446,6 +468,8 @@ export class TournamentComponent implements OnInit {
     this.isOnFinals = true;
 
     this.cdr.detectChanges();
+
+    this.loadMatches();
   }
 
   ngOnInit() {
