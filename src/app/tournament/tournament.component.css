@@ -5,3 +5,39 @@
 .bordetred {
     border: 2px solid red;
 }
+
+.bordery {
+    border: 2px solid #b07800;
+}
+
+.finals-panel {
+    /* Patrón de líneas más delgadas y diagonales con fondo de gradiente dorado */
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 215, 0, 0.2),
+        rgba(255, 215, 0, 0.2) 5px,
+        rgba(156, 93, 82, 0.5) 5px,
+        rgba(156, 93, 82, 0.5) 6px
+    ),
+    linear-gradient(
+        135deg,
+        #ffd700 0%,
+        #f8d568 25%,
+        #fbed96 50%,
+        #f8d568 75%,
+        #ffd700 100%
+    );
+    
+    /* Ajuste en el tamaño del fondo para controlar la repetición de las líneas diagonales y el gradiente */
+    background-size:  100% 200%;
+    animation: moverLineas 5s linear infinite;
+}
+
+@keyframes moverLineas {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 -100%;
+    }
+}

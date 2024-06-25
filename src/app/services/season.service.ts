@@ -40,4 +40,9 @@ export class SeasonService {
     const url = `${this.apiUrl}/${seasonId}/chWest?championWestId=${championWestId}&semiFinalistWestId=${semiFinalistWestId}`;
     return this.http.post<Season>(url, {}, {responseType: 'text' as 'json'});
   }
+
+  addChampion(seasonId: number, championId: number, subChampionId:number): Observable<Season> {
+    const url = `${this.apiUrl}/${seasonId}/champion?championId=${championId}&subChampionId=${subChampionId}`;
+    return this.http.post<Season>(url, {}, {responseType: 'text' as 'json'});
+  }
 }

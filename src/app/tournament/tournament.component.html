@@ -103,7 +103,7 @@
             @if(isOnPlayIn && !isOnPlayOffs){
                 <button class="bg-primary rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" (click)="startPlayIn()">Start Play In</button>
             }
-            @if(isOnPlayOffs){
+            @if(isOnPlayOffs || isOnFinals || isFinished){
                 <div>
                     <h2 class="text-2xl text-primary font-bold">Play In East</h2>
                 </div>
@@ -137,10 +137,13 @@
                         </div>
                     }
                 }
+            }
+                @if(isOnPlayOffs){
                 <div class="mt-6">
                     <button class="bg-primary mt-2 rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" (click)="startPlayOffs()">Start Play Offs</button>
-                </div>      
-            }
+                </div>
+                }      
+            
     </div>
     <div class="flex flex-col justify-center items-center mb-10">
         @if(isOnFinals){
@@ -240,9 +243,46 @@
                 </div>
             }
 
+            @if(!isFinished){
             <div class="mt-6">
-                <button class="bg-primary mt-2 rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" >Start Finals</button>
+                <button class="bg-primary mt-2 rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" (click)="startNBAfinals()">Start Finals</button>
             </div>      
+            }
+        }
+    </div>
+    <div class="flex flex-col justify-center items-center finals-panel">
+        @if(isFinished){
+            <div class="flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold">NBA Finals</h2>
+                <img src="https://images.squarespace-cdn.com/content/v1/56d8a4158a65e232d58e296c/1528319444218-K7PM0JJBP18L7A10RIXG/NBA-Finals-Logo.png" alt="logo" class="w-32 h-12"/>
+            </div>
+            @for(serie of FinalsNBA; track serie.serieId){
+                <div class="mt-6 h-12">
+                    <h4 class="text-yellow-900"> {{ serie.winsHome }} - {{ serie.winsVisitor }} </h4>
+                </div>
+                @for(match of serie.matches; track match.matchId){
+                    <div class="bg-yellow-100 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg bordery">
+                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                    </div>
+                }
+
+                <div class="h-12">
+                    <h5 class="text-center font-bold">Champion <span class="text-primary">NBA</span></h5>
+                </div>
+                <div class="bg-yellow-300 w-2/3 md:w-1/3 mb-10 flex justify-between items-center rounded-lg border-2 bordetr">
+                    <div class="flex justify-center items-center flex-grow">
+                        <img [src]="season.champion?.logo" alt="logo" class="w-12 h-12"/>
+                        <h3 class="ml-2">{{season.champion?.name}}</h3>
+                    </div>
+                    <img src="https://i.pinimg.com/originals/50/58/c4/5058c4f3aab6aa3cad67c50ceaeb0bca.gif" class="w-8 h-12 mr-3"/>
+                </div>
+            }
         }
     </div>
 </div>

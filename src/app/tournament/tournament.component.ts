@@ -602,8 +602,103 @@ export class TournamentComponent implements OnInit {
 
   }
 
-  startFinals(){
-    
+  async finals (){
+    await this.startFinals();
+    this.loadTeams();
+  }
+
+  startNBAfinals(){
+    this.finals();
+    this.isFinished = true;
+    this.cdr.detectChanges();
+  }
+
+  async startFinals(){
+    let championEast = this.season.championEast
+    let championWest = this.season.championWest
+
+      let up = this.eastTeams.find(team => team.name === championEast?.name);
+      let down = this.westTeams.find(team => team.name === championWest?.name);
+
+      let winsTeam1 = 0;
+      let winsTeam2 = 0;
+
+      let teamhome,teamvisitor;
+
+      if(up && down && up.percentage > down.percentage){
+        teamhome = up;
+        teamvisitor = down;
+      }else {
+        teamhome = down;
+        teamvisitor = up;
+      }
+      
+      let team1, team2;
+      if(teamhome && teamvisitor){
+        team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
+        team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
+      }
+
+      const newserie = {
+        serieId: 0,
+        seasonId: this.seasonId,
+        winsHome: 0,
+        winsVisitor: 0,
+        phase: 5
+      }
+      let serie = await this.createSerieAsync(this.serieService, newserie)
+
+      let numgame = 1;
+      while ( winsTeam1 < 4 && winsTeam2 < 4){
+        let scores = matchnba();
+        let score1 = scores[0];
+        let score2 = scores[1];
+
+        let homegame, awaygame;
+        if(numgame == 1 || numgame == 2 || numgame == 5 || numgame == 7){
+          homegame = team1;
+          awaygame = team2;
+          if(score1 > score2){
+            winsTeam1++;
+          }else{
+            winsTeam2++;
+          }
+        }else {
+          homegame = team2;
+          awaygame = team1;
+          if(score2 > score1){
+            winsTeam1++;
+          }else {
+            winsTeam2++;
+          }
+        }
+
+        let match = {
+          matchId: 0,
+          serieId: serie.serieId,
+          homeTeamId: homegame?.teamId ?? -1,
+          visitorTeamId: awaygame?.teamId ?? -1,
+          homeScore: score1,
+          visitorScore: score2,
+        };
+      
+        await this.createMatchAsync(this.matchService, match);
+
+        if(winsTeam1 === 4){
+          if(team1 && team2){
+            this.teamService.updateChampion(team1.teamId).subscribe();
+            this.seasonService.addChampion(this.seasonId, team1.teamId, team2.teamId).subscribe();
+          }
+        }else if(winsTeam2 === 4){
+          if(team1 && team2){
+            this.teamService.updateChampion(team2.teamId).subscribe();
+            this.seasonService.addChampion(this.seasonId, team2.teamId, team1.teamId).subscribe();
+          }
+        }
+
+        numgame++;
+      }
+      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
   }
 
   ngOnInit() {
