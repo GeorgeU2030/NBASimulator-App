@@ -37,7 +37,7 @@
                                     
                                     @if(season.champion){
                                         <td class="flex justify-center items-center mt-1"><img [src]="season.champion.logo" alt="Logo Winner" class="w-12 h-12"></td>
-                                        <td class="text-center">{{season.champion.name}}</td>
+                                        <td class="text-center">{{season.champion.name}} ({{season.champion.rings}})</td>
                                     }
                                     @else{
                                         <td class="flex justify-center items-center mt-1"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>

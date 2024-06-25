@@ -7,7 +7,9 @@
       </div>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 w-11/12 bg-red-600 mt-4 mb-6 rounded-lg">
         @for (team of listTeams; track team.teamId){
-          <div class="card cardh flex flex-col justify-center items-center mt-2 mb-2">
+          <div class="card cardh flex flex-col justify-center items-center mt-2 mb-2" 
+          (click)="navigateTeam(team.teamId)"
+          >
             <img
               src={{team.logo}}
               class="w-32 h-32 mt-2"

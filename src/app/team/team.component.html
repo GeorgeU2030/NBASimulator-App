@@ -1,0 +1,28 @@
+@if(team){
+    <div class="min-h-screen" [ngStyle]="getBackground(team.teamId)">
+            <div class="flex flex-col items-center">
+                <div class="flex mt-6">
+                    <h1 class="text-white">{{team.name}}</h1>
+                </div>
+
+                <div class="flex items-center justify-center bg-slate-100 rounded-lg">
+                    <img [src]="team.logo" class="w-48 h-48 mt-2"/>
+                </div>
+
+                <div class="flex flex-col justify-center items-center mt-3 bg-slate-200 px-12 rounded-lg bordered">
+                    <div class="flex justify-center items-center">
+                        <p class="font-bold text-primary">NBA Titles: <span class="text-black ml-3 text-xl">{{team.rings}}</span></p>
+                    </div>
+                    <div>
+                        <p class="text-primary font-bold">Conference: {{team.conference}}</p>
+                        <p class="text-primary font-bold">Titles Conference: <span class="text-black ml-3 text-lg">{{team.titlesConference}}</span></p>
+                    </div>
+                    <div>
+                        <p class="text-primary font-bold">Division: {{team.division}}</p>
+                        <p class="text-primary font-bold">Titles Division: <span class="text-black ml-3 text-lg">{{team.titlesDivision}}</span></p>
+                    </div>
+                </div>
+                
+            </div>
+    </div>
+}

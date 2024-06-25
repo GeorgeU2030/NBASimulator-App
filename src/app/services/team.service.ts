@@ -22,6 +22,10 @@ export class TeamService {
     return this.http.get<Team>(this.apiUrl + '/getByName/' + name);
   }
 
+  getTeamById(teamId:number):Observable<Team>{
+    return this.http.get<Team>(this.apiUrl + '/' + teamId);
+  }
+
   updateDivision(teamId:number):Observable<Team>{
     return this.http.put<Team>(this.apiUrl + '/' + teamId + '/division', {});
   }
