@@ -9,8 +9,8 @@ export interface Season {
     subChampion?: Team,
     championEast?: Team,
     championWest?: Team,
-    semifinalEast?: Team,
-    semifinalWest?: Team,
+    semiFinalistEast?: Team,
+    semiFinalistWest?: Team,
     teams?: SeasonTeam[],
     series?: Serie[],
 }

@@ -26,33 +26,43 @@
                                 <th class="min-w-60 bg-primary text-white text-lg h-12">Winner</th>
                                 <th class="min-w-20 bg-primary text-white text-lg h-12"></th>
                                 <th class="min-w-60 bg-primary text-white text-lg h-12">Subchampion</th>
+                                <th class="min-w-20 bg-primary text-white text-lg h-12">Semi-Finalists</th>
                                 <th class="min-w-12 bg-primary text-white text-lg h-12"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="h-16 bg-gray-300 ">
                                 @for(season of listSeasons; track season.seasonId){
+                                    <tr class="h-16 bg-gray-300 ">
                                     <td class="text-center text-2xl text-primary font-bold">{{ season.edition }}</td>
                                     
                                     @if(season.champion){
-                                        <td><img [src]="season.champion.logo" alt="Logo Winner"></td>
+                                        <td class="flex justify-center items-center mt-1"><img [src]="season.champion.logo" alt="Logo Winner" class="w-12 h-12"></td>
                                         <td class="text-center">{{season.champion.name}}</td>
                                     }
                                     @else{
-                                        <td class="flex justify-center items-center"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
+                                        <td class="flex justify-center items-center mt-1"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
                                         <td class="text-center">No champion yet</td>
                                     }
                                     @if(season.subChampion){
-                                        <td><img [src]="season.subChampion.logo" alt="Logo Subchampion"></td>
+                                        <td class="flex justify-center items-center mt-1"><img [src]="season.subChampion.logo" alt="Logo Subchampion" class="w-12 h-12"></td>
                                         <td class="text-center">{{season.subChampion.name}}</td>
                                     }
                                     @else{
-                                        <td class="flex justify-center items-center"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
+                                        <td class="flex justify-center items-center mt-1"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>
                                         <td class="text-center">No subchampion yet</td>
                                     }
-                                    <td class="flex justify-center items-center" (click)="navigate(season.seasonId)"><img src="/basket.png" class="w-10 h-10 mt-1"/></td>
+                                    @if (season.semiFinalistEast && season.semiFinalistWest){
+                                        <td class="flex justify-center items-center mt-1"><img [src]="season.semiFinalistEast.logo" alt="Logo Subchampion" class="w-12 h-12">
+                                        <img [src]="season.semiFinalistWest.logo" alt="Logo Subchampion" class="ml-1 w-12 h-12">
+                                        </td>
+                                    }
+                                    @else {
+                                        <td class="text-center">No semi-finalists</td>
+                                    }
+                                    
+                                    <td style="text-align: center;" (click)="navigate(season.seasonId)"><img src="/basket.png" class="w-10 h-10 mt-1"/></td>
+                                    </tr>
                                 }
-                            </tr>
                         </tbody>
                     </table>
                 </div>
