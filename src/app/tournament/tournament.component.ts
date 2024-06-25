@@ -109,12 +109,26 @@ export class TournamentComponent implements OnInit {
     }
   }
 
+  chargeChampionDivision(){
+    const processedDivisions = new Set(); 
+    this.listTeams.forEach(team => {
+      if (!processedDivisions.has(team.division)) {
+        this.teamService.getTeamByName(team.name).subscribe(data => {
+          this.teamService.updateDivision(data.teamId).subscribe();
+          processedDivisions.add(team.division);
+        })
+      }
+    })
+  }
+
   async start(){
     this.listTeams = await nbaTournament(this.eastTeams, this.westTeams);
 
     this.listTeams.forEach(team => {
       this.seasonTeamService.updateTeam(team.seasonTeamId, team).subscribe()
     });
+
+    this.chargeChampionDivision();
 
     this.verifyPlayIn();
   }
@@ -386,12 +400,16 @@ export class TournamentComponent implements OnInit {
               team1.teamId,
               team2.teamId
             ).subscribe();
+
+            this.teamService.updateConference(team1.teamId).subscribe();
           }else if(winsTeam2 == 4){
             this.seasonService.addChampionEast(
               this.seasonId,
               team2.teamId,
               team1.teamId
             ).subscribe();
+
+            this.teamService.updateConference(team2.teamId).subscribe();
           }
         } else if (conference === 'Western'){
           if(winsTeam1 == 4) {
@@ -400,12 +418,16 @@ export class TournamentComponent implements OnInit {
               team1.teamId,
               team2.teamId 
             ).subscribe();
+
+            this.teamService.updateConference(team1.teamId).subscribe();
           }else if(winsTeam2 == 4){
             this.seasonService.addChampionWest(
               this.seasonId,
               team2.teamId,
               team1.teamId
             ).subscribe();
+
+            this.teamService.updateConference(team2.teamId).subscribe();
           }
         }
 
