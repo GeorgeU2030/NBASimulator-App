@@ -1,3 +1,7 @@
 .bordetr{
     border: 2px solid #1F4E8C;
 }
+
+.bordetred {
+    border: 2px solid red;
+}

@@ -11,7 +11,9 @@ import { Team } from '../interfaces/Team';
 import { TeamService } from '../services/team.service';
 import { matchnba } from '../logic/matchnba';
 import { MatchService } from '../services/match.service';
+import { Serie } from '../interfaces/Serie';
 import { Match } from '../interfaces/Match';
+import { SerieService } from '../services/serie.service';
 
 @Component({
   selector: 'app-tournament',
@@ -25,18 +27,19 @@ export class TournamentComponent implements OnInit {
   listTeams : SeasonTeam[] = [];
   eastTeams : SeasonTeam[] = [];
   westTeams : SeasonTeam[] = [];
-  playInMatchesEast : Match[] = [];
-  playInMatchesWest : Match[] = [];
-  FirstRoundMatches : Match[] = [];
-  SecondRoundMatches : Match[] = [];
-  FinalConferencesEast : Match[] = [];
-  FinalConferencesWest : Match[] = [];
-  FinalsNBA : Match[] = [];
+  playInMatchesEast : Serie[] = [];
+  playInMatchesWest : Serie[] = [];
+  FirstRoundMatches : Serie[] = [];
+  SecondRoundMatches : Serie[] = [];
+  FinalConferencesEast : Serie[] = [];
+  FinalConferencesWest : Serie[] = [];
+  FinalsNBA : Serie[] = [];
   season!: Season;
   seasonId!: number ;
   isOnPlayOffs = false;
   isOnPlayIn = false;
   isOnFinals = false;
+  isFinished = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +47,7 @@ export class TournamentComponent implements OnInit {
     private seasonTeamService: SeasonteamService,
     private teamService: TeamService,
     private matchService: MatchService,
+    private serieService: SerieService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -64,39 +68,42 @@ export class TournamentComponent implements OnInit {
       this.verifyPlayOffs();
       this.verifyFinals();
       this.loadMatches();
+      if(this.season.champion){
+        this.isFinished = true;
+      }
     })
   }
 
   loadMatches(){
-    if(this.season.matches){
-      const sortedMatches = this.season.matches.sort((a, b) => a.matchId - b.matchId);
+    if(this.season.series){
+      const sortedMatches = this.season.series.sort((a, b) => a.serieId - b.serieId);
       this.playInMatchesEast = sortedMatches.slice(0, 3);
       this.playInMatchesWest = sortedMatches.slice(3, 6);
-      this.FirstRoundMatches = sortedMatches.filter(match => match.phase === 1);
-      this.SecondRoundMatches = sortedMatches.filter(match => match.phase === 2);
-      this.FinalConferencesEast = sortedMatches.filter(match => match.phase === 3);
-      this.FinalConferencesWest = sortedMatches.filter(match => match.phase === 4);
-      this.FinalsNBA = sortedMatches.filter(match => match.phase === 5);
+      this.FirstRoundMatches = sortedMatches.filter(serie => serie.phase === 1);
+      this.SecondRoundMatches = sortedMatches.filter(serie => serie.phase === 2);
+      this.FinalConferencesEast = sortedMatches.filter(serie => serie.phase === 3);
+      this.FinalConferencesWest = sortedMatches.filter(serie => serie.phase === 4);
+      this.FinalsNBA = sortedMatches.filter(serie => serie.phase === 5);
     }
   }
 
   verifyPlayIn(){
-    if(this.listTeams[0].percentage > 0 && this.season.matches?.length === 0){
+    if(this.listTeams[0].percentage > 0 && this.season.series?.length === 0){
       this.isOnPlayIn = true;
     }
   }
 
   verifyPlayOffs(){
-    if(this.season.matches){
-      if(this.season.matches.length > 0 && this.season.matches.length < 7){
+    if(this.season.series){
+      if(this.season.series.length > 0 && this.season.series.length < 7){
         this.isOnPlayOffs = true;
       }
     }
   }
 
   verifyFinals(){
-    if(this.season.matches){
-      if(this.season.matches.length > 6 ){
+    if(this.season.series){
+      if(this.season.series.length > 6 ){
         this.isOnFinals = true;
       }
     }
@@ -113,8 +120,10 @@ export class TournamentComponent implements OnInit {
   }
 
   async PlayOffTeams(topEastTeams: SeasonTeam[]){
-    
-    let matches = this.season.matches?.sort((a, b) => a.matchId - b.matchId);
+     
+    let matches = this.season.series?.flatMap(serie => serie.matches ?? []) 
+      .filter((match): match is Match => match !== undefined) 
+      .sort((a, b) => a.matchId - b.matchId);
 
     let smatches;
 
@@ -131,12 +140,13 @@ export class TournamentComponent implements OnInit {
     let eastWinningTeams;
 
     if(topEastTeams[0].conference == 'Eastern'){
-      eastWinningTeams = this.eastTeams.filter(team => winningPlayIn?.includes(team.name));
+      eastWinningTeams = this.eastTeams.filter(team => winningPlayIn?.includes(team.name))
+                                       .sort((a, b) => winningPlayIn.indexOf(a.name) - winningPlayIn.indexOf(b.name));
       topEastTeams.push(...eastWinningTeams);
     }else {
-      eastWinningTeams = this.westTeams.filter(team => winningPlayIn?.includes(team.name));
+      eastWinningTeams = this.westTeams.filter(team => winningPlayIn?.includes(team.name))
+                                       .sort((a, b) => winningPlayIn.indexOf(a.name) - winningPlayIn.indexOf(b.name));
       topEastTeams.push(...eastWinningTeams);
-      
     }
    
     let nextPhase : SeasonTeam[] = [];
@@ -157,30 +167,51 @@ export class TournamentComponent implements OnInit {
         team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
       }
 
+      const newserie = {
+        serieId: 0,
+        seasonId: this.seasonId,
+        winsHome: 0,
+        winsVisitor: 0,
+        phase: 1
+      }
+  
+      let serie = await this.createSerieAsync(this.serieService, newserie)
 
+      let numgame = 1; 
       while ( winsTeam1 < 4 && winsTeam2 < 4){
         let scores = matchnba();
         let score1 = scores[0];
         let score2 = scores[1];
 
+        let homegame, awaygame;
+        if(numgame == 1 || numgame == 2 || numgame == 5 || numgame == 7){
+          homegame = team1;
+          awaygame = team2;
+          if(score1 > score2){
+            winsTeam1++;
+          }else{
+            winsTeam2++;
+          }
+        }else {
+          homegame = team2;
+          awaygame = team1;
+          if(score2 > score1){
+            winsTeam1++;
+          }else{
+            winsTeam2++;
+          }
+        }
+
         let match = {
           matchId: 0,
-          seasonId: this.seasonId,
-          homeTeamId: team1?.teamId ?? -1,
-          visitorTeamId: team2?.teamId ?? -1,
+          serieId: serie.serieId,
+          homeTeamId: homegame?.teamId ?? -1,
+          visitorTeamId: awaygame?.teamId ?? -1,
           homeScore: score1,
           visitorScore: score2,
-          phase: 1
         };
       
         await this.createMatchAsync(this.matchService, match);
-        
-
-        if(score1 > score2){
-          winsTeam1++;
-        } else {
-          winsTeam2++;
-        }
 
         if(winsTeam1 === 4){
           nextPhase.push(teamhome);
@@ -188,7 +219,11 @@ export class TournamentComponent implements OnInit {
           nextPhase.push(teamvisitor);
         }
 
+        numgame++;
+
       }
+
+      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
     }
 
     let finalConference = [];
@@ -214,28 +249,51 @@ export class TournamentComponent implements OnInit {
       let team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
       let team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
 
+      const newserie = {
+        serieId: 0,
+        seasonId: this.seasonId,
+        winsHome: 0,
+        winsVisitor: 0,
+        phase: 2
+      }
+
+      let serie = await this.createSerieAsync(this.serieService, newserie)
+
+      let numgame = 1;
       while ( winsTeam1 < 4 && winsTeam2 < 4){
         let scores = matchnba();
         let score1 = scores[0];
         let score2 = scores[1];
 
+        let homegame, awaygame;
+        if(numgame == 1 || numgame == 2 || numgame == 5 || numgame == 7){
+          homegame = team1;
+          awaygame = team2;
+          if(score1 > score2){
+            winsTeam1++;
+          }else{
+            winsTeam2++;
+          }
+        }else {
+          homegame = team2;
+          awaygame = team1;
+          if(score2 > score1){
+            winsTeam1++;
+          }else {
+            winsTeam2++;
+          }
+        }
+
         let match = {
           matchId: 0,
-          seasonId: this.seasonId,
-          homeTeamId: team1.teamId,
-          visitorTeamId: team2.teamId,
+          serieId: serie.serieId,
+          homeTeamId: homegame.teamId,
+          visitorTeamId: awaygame.teamId,
           homeScore: score1,
           visitorScore: score2,
-          phase: 2
         };
       
         await this.createMatchAsync(this.matchService, match);
-
-        if(score1 > score2){
-          winsTeam1++;
-        } else {
-          winsTeam2++;
-        }
 
         if(winsTeam1 === 4){
           finalConference.push(teamhome);
@@ -243,11 +301,14 @@ export class TournamentComponent implements OnInit {
           finalConference.push(teamvisitor);
         }
 
+        numgame++;
       }
+
+      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
     }
 
     
-      let phaseconference ;
+      let phaseconference = 0 ;
       if(finalConference[0].conference === 'Eastern'){
         phaseconference = 3;
       }else if(finalConference[0].conference === 'Western'){
@@ -272,28 +333,50 @@ export class TournamentComponent implements OnInit {
       let team1 = await this.getTeamByNameAsync(this.teamService, teamhome.name);
       let team2 = await this.getTeamByNameAsync(this.teamService, teamvisitor.name);
 
+      const newserie = {
+        serieId: 0,
+        seasonId: this.seasonId,
+        winsHome: 0,
+        winsVisitor: 0,
+        phase: phaseconference
+      }
+      let serie = await this.createSerieAsync(this.serieService, newserie)
+
+      let numgame = 1;
       while ( winsTeam1 < 4 && winsTeam2 < 4){
         let scores = matchnba();
         let score1 = scores[0];
         let score2 = scores[1];
 
+        let homegame, awaygame;
+        if(numgame == 1 || numgame == 2 || numgame == 5 || numgame == 7){
+          homegame = team1;
+          awaygame = team2;
+          if(score1 > score2){
+            winsTeam1++;
+          }else{
+            winsTeam2++;
+          }
+        }else {
+          homegame = team2;
+          awaygame = team1;
+          if(score2 > score1){
+            winsTeam1++;
+          }else {
+            winsTeam2++;
+          }
+        }
+
         let match = {
           matchId: 0,
-          seasonId: this.seasonId,
-          homeTeamId: team1.teamId,
-          visitorTeamId: team2.teamId,
+          serieId: serie.serieId,
+          homeTeamId: homegame.teamId,
+          visitorTeamId: awaygame.teamId,
           homeScore: score1,
           visitorScore: score2,
-          phase: phaseconference
         };
       
         await this.createMatchAsync(this.matchService, match);
-
-        if(score1 > score2){
-          winsTeam1++;
-        } else {
-          winsTeam2++;
-        }
 
         let conference = teamhome.conference;
         if(conference === 'Eastern'){
@@ -325,7 +408,11 @@ export class TournamentComponent implements OnInit {
             ).subscribe();
           }
         }
+
+        numgame++;
       }
+
+      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
 
       // Finish Conferences
   }
@@ -342,6 +429,15 @@ export class TournamentComponent implements OnInit {
   async createMatchAsync(matchService: MatchService, match: Match): Promise<Match> {
     return new Promise((resolve, reject) => {
       matchService.newMatch(match).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
+  }
+
+  async createSerieAsync(serieService: SerieService, serie: Serie): Promise<Serie> {
+    return new Promise((resolve, reject) => {
+      serieService.addSerie(serie).subscribe({
         next: resolve,
         error: reject
       });
@@ -364,9 +460,19 @@ export class TournamentComponent implements OnInit {
     let team7 = await this.getTeamByNameAsync(this.teamService, teams[0].name);
     let team8 = await this.getTeamByNameAsync(this.teamService, teams[1].name);
 
+    const newserie = {
+      serieId: 0,
+      seasonId: this.seasonId,
+      winsHome: 0,
+      winsVisitor: 0,
+      phase: 0
+    }
+
+    let serie = await this.createSerieAsync(this.serieService, newserie)
+
     let match = {
       matchId: 0,
-      seasonId: this.seasonId,
+      serieId: serie.serieId,
       homeTeamId: team7.teamId,
       visitorTeamId: team8.teamId,
       homeScore: score1,
@@ -388,9 +494,11 @@ export class TournamentComponent implements OnInit {
     let team9 = await this.getTeamByNameAsync(this.teamService, teams[2].name);
     let team10 = await this.getTeamByNameAsync(this.teamService, teams[3].name);
 
+    serie = await this.createSerieAsync(this.serieService, newserie)
+
     match = {
       matchId: 0,
-      seasonId: this.seasonId,
+      serieId: serie.serieId,
       homeTeamId: team9.teamId,
       visitorTeamId: team10.teamId,
       homeScore: score1,
@@ -406,10 +514,12 @@ export class TournamentComponent implements OnInit {
     team9 = await this.getTeamByNameAsync(this.teamService, loser.name);
     team10 = await this.getTeamByNameAsync(this.teamService, winner.name);
 
+    serie = await this.createSerieAsync(this.serieService, newserie)
+
     match = {
       matchId: 0,
-      seasonId: this.seasonId,
       homeTeamId: team9.teamId,
+      serieId: serie.serieId,
       visitorTeamId: team10.teamId,
       homeScore: score1,
       visitorScore: score2
@@ -422,6 +532,7 @@ export class TournamentComponent implements OnInit {
   async generateMatches(eastTeams: SeasonTeam[], westTeams: SeasonTeam[]){
     await this.playIn(eastTeams);
     await this.playIn(westTeams);
+    this.loadTeams();
   }
 
   async generatePlayOffs(topEastTeams: SeasonTeam[], topWestTeams: SeasonTeam[]){
@@ -438,8 +549,8 @@ export class TournamentComponent implements OnInit {
     } catch (error) {
       console.error('Error generating playoffs for West Teams:', error);
     }
-  
-    
+    this.loadTeams();
+
   }
 
   startPlayIn(){
@@ -454,8 +565,6 @@ export class TournamentComponent implements OnInit {
 
     this.cdr.detectChanges();
 
-    this.loadMatches();
-
   }
 
   startPlayOffs(){
@@ -469,7 +578,10 @@ export class TournamentComponent implements OnInit {
 
     this.cdr.detectChanges();
 
-    this.loadMatches();
+  }
+
+  startFinals(){
+    
   }
 
   ngOnInit() {

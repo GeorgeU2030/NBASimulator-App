@@ -107,30 +107,35 @@
                 <div>
                     <h2 class="text-2xl text-primary font-bold">Play In East</h2>
                 </div>
-                @for(match of playInMatchesEast; track match.matchId){
-                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
-                    </div>
+                @for(serie of playInMatchesEast; track serie.serieId){
+                    @for(match of serie.matches; track match.matchId){
+                        <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                            <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                            <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                            <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                            <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                            <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                            <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                            <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                        </div>
+                    }
                 }
+                
                 <div class="mt-6">
                     <h2 class="text-2xl text-primary font-bold">Play In West</h2>
                 </div>
-                @for(match of playInMatchesWest; track match.matchId){
-                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
-                    </div>
+                @for(serie of playInMatchesWest; track serie.serieId){
+                    @for(match of serie.matches; track match.matchId){
+                        <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                            <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                            <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                            <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                            <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                            <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                            <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                            <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                        </div>
+                    }
                 }
                 <div class="mt-6">
                     <button class="bg-primary mt-2 rounded-lg text-slate-200 font-bold px-5 py-3 border-2 border-red-600 cursor-pointer" (click)="startPlayOffs()">Start Play Offs</button>
@@ -142,45 +147,68 @@
             <div>
                 <h2 class="text-2xl text-primary font-bold">First Round</h2>
             </div>
-            @for(match of FirstRoundMatches; track match.matchId){
-                <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                    <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                    <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                    <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                    <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                    <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+            @for(serie of FirstRoundMatches; track serie.serieId){
+                <div class="mt-6 h-12">
+                 <h4 class="text-primary"> {{ serie.winsHome }} - {{ serie.winsVisitor }} </h4> 
                 </div>
+                @for(match of serie.matches; track match.matchId){
+                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                    </div>
+                }
             }
             <div class="mt-6">
                 <h2 class="text-2xl text-primary font-bold">Second Round</h2>
             </div>
-            @for(match of SecondRoundMatches; track match.matchId){
-                <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                    <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                    <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                    <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                    <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                    <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+            @for(serie of SecondRoundMatches; track serie.serieId){
+                <div class="mt-6 h-12">
+                    <h4 class="text-primary"> {{ serie.winsHome }} - {{ serie.winsVisitor }} </h4> 
                 </div>
+                @for(match of serie.matches; track match.matchId){
+                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                    </div>
+                }
             }
 
             <div class="mt-6">
                 <h2 class="text-2xl text-primary font-bold">Eastern Conference Finals</h2>
             </div>
 
-            @for(match of FinalConferencesEast; track match.matchId){
-                <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                    <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                    <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                    <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                    <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                    <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+            @for(serie of FinalConferencesEast; track serie.serieId){
+                <div class="mt-6 h-12">
+                    <h4 class="text-primary"> {{ serie.winsHome }} - {{ serie.winsVisitor }} </h4> 
+                </div>
+                @for(match of serie.matches; track match.matchId){
+                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                    </div>
+                }
+
+                <div class="bg-slate-400 w-2/3 md:w-1/3 mt-4 flex justify-between items-center rounded-lg border-2 bordetr">
+                    <div class="flex justify-center items-center flex-grow">
+                        <img [src]="season.championEast?.logo" alt="logo" class="w-12 h-12"/>
+                        <h3 class="ml-2">{{season.championEast?.name}}</h3>
+                    </div>
+                    <img src="https://cdn.nba.com/teams/legacy/www.nba.com/clippers/sites/clippers/files/legacy/main_photo/eastconferencelogo.png" class="w-12 h-12 mr-3"/>
                 </div>
             }
 
@@ -188,15 +216,27 @@
                 <h2 class="text-2xl text-red-600 font-bold">Western Conference Finals</h2>
             </div>
 
-            @for(match of FinalConferencesWest; track match.matchId){
-                <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
-                    <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
-                    <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
-                    <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
-                    <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
-                    <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
-                    <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+            @for(serie of FinalConferencesWest; track serie.serieId){
+                <div class="mt-6 h-12">
+                    <h4 class="text-primary"> {{ serie.winsHome }} - {{ serie.winsVisitor }} </h4> 
+                </div>
+                @for(match of serie.matches; track match.matchId){
+                    <div class="bg-slate-300 mt-3 w-11/12 md:w-5/6 flex items-center justify-center rounded-lg">
+                        <img [src]="match.homeTeam?.logo" alt="Logo Team" class="w-8 ml-2 md:ml-0 h-8 md:w-12 md:h-12" />
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.homeTeam?.name}}</p>
+                        <p [ngClass]="match.homeScore > match.visitorScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.homeScore}}</p>
+                        <p class="text-red-600 font-semibold text-tiny md:text-lg ml-1 mr-1 md:ml-2 md:mr-2">vs</p>
+                        <p [ngClass]="match.visitorScore > match.homeScore ? 'md:bg-green-200' : 'md:bg-white'" class="font-bold text-base md:text-xl w-8 md:w-32 text-center md:py-1 rounded-lg md:bordetr">{{match.visitorScore}}</p>
+                        <p class="text-primary font-semibold text-sm md:text-lg ml-2 w-1/4 text-center">{{match.visitorTeam?.name}}</p>
+                        <img [src]="match.visitorTeam?.logo" alt="Logo Team" class="w-8 mr-2 md:mr-0 h-8 md:w-12 md:h-12" />
+                    </div>
+                }
+                <div class="bg-slate-400 w-2/3 md:w-1/3 mt-4 flex justify-between items-center rounded-lg border-2 bordetred">
+                    <div class="flex justify-center items-center flex-grow">
+                        <img [src]="season.championWest?.logo" alt="logo" class="w-12 h-12"/>
+                        <h3 class="ml-2">{{season.championWest?.name}}</h3>
+                    </div>
+                    <img src="https://cdn.nba.com/teams/legacy/www.nba.com/clippers/sites/clippers/files/legacy/main_photo/1westconferencelogo.png" class="w-12 h-12 mr-3"/>
                 </div>
             }
 

@@ -1,5 +1,5 @@
-import { Match } from "./Match";
 import { SeasonTeam } from "./SeasonTeam";
+import { Serie } from "./Serie";
 import { Team } from "./Team";
 
 export interface Season {
@@ -12,5 +12,5 @@ export interface Season {
     semifinalEast?: Team,
     semifinalWest?: Team,
     teams?: SeasonTeam[],
-    matches?: Match[],
+    series?: Serie[],
 }
