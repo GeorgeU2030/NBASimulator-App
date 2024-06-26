@@ -5,9 +5,14 @@
       <div class="flex justify-center ">
         <p-button label="Seasons" icon="pi pi-chart-pie" [rounded]="true" (click)="navigate()"/>
       </div>
+      <div class="flex justify-center mt-3">
+        <button class="rounded-lg py-1 bg-red-600 text-white font-semibold cursor-pointer borderbl"
+        (click)="navigateChampion()"
+        >See the Champions</button>
+      </div>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 w-11/12 bg-red-600 mt-4 mb-6 rounded-lg">
         @for (team of listTeams; track team.teamId){
-          <div class="card cardh flex flex-col justify-center items-center mt-2 mb-2" 
+          <div class="card cardh flex flex-col justify-center items-center mt-2 mb-2 cursor-pointer" 
           (click)="navigateTeam(team.teamId)"
           >
             <img

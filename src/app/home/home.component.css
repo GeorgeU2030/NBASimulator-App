@@ -24,3 +24,11 @@
         @apply bg-slate-300 rounded-lg ;
     }
 }
+
+.borderbl {
+    border: 2px solid #1F4E8C;
+}
+
+.borderbl:hover {
+    background-color: darkgoldenrod;
+}

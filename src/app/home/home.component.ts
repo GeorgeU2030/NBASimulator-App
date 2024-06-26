@@ -38,6 +38,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/team', teamId]);
   }
 
+  navigateChampion(){
+    this.router.navigate(['/champions']);
+  }
+
   ngOnInit(): void {
     this.getTeams();
   }

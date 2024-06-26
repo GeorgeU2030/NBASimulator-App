@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Team } from '../interfaces/Team';
+import { TeamEdition } from '../interfaces/TeamEdition';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,10 @@ export class TeamService {
 
   getTeams():Observable<Team[]>{
     return this.http.get<Team[]>(this.apiUrl);
+  }
+
+  getTeamsEditions():Observable<TeamEdition[]>{
+    return this.http.get<TeamEdition[]>(this.apiUrl + '/editions');
   }
 
   getTeamByName(name:string):Observable<Team>{

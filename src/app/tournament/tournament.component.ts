@@ -40,6 +40,7 @@ export class TournamentComponent implements OnInit {
   isOnPlayIn = false;
   isOnFinals = false;
   isFinished = false;
+  loadDivision = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,27 +52,36 @@ export class TournamentComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
+  async chargeStats(data: Season){
+    this.listTeams = data.teams ? data.teams.sort((a, b) => {
+      const percentageDiff = b.percentage - a.percentage;
+      if(percentageDiff !== 0){
+        return percentageDiff;
+      }
+      return a.seasonTeamId - b.seasonTeamId;
+    }) : [];
+    this.season = data;
+    this.eastTeams = this.listTeams.filter(team => team.conference === 'Eastern');
+    this.westTeams = this.listTeams.filter(team => team.conference === 'Western');
+  }
+
+  async loadInit(){
+    const data = await this.getSeasonByIdAsync(this.seasonService, this.seasonId);
+    await this.chargeStats(data);
+    this.verifyPlayIn();
+    this.verifyPlayOffs();
+    this.verifyFinals();
+    this.loadMatches();
+    if(this.season.champion){
+      this.isFinished = true;
+    }
+    if(this.loadDivision){
+      this.chargeChampionDivision();
+    }
+  }
 
   loadTeams(){
-    this.seasonService.getSeasonById(this.seasonId).subscribe(data => {
-      this.listTeams = data.teams ? data.teams.sort((a, b) => {
-        const percentageDiff = b.percentage - a.percentage;
-        if(percentageDiff !== 0){
-          return percentageDiff;
-        }
-        return a.seasonTeamId - b.seasonTeamId;
-      }) : [];
-      this.season = data;
-      this.eastTeams = this.listTeams.filter(team => team.conference === 'Eastern');
-      this.westTeams = this.listTeams.filter(team => team.conference === 'Western');
-      this.verifyPlayIn();
-      this.verifyPlayOffs();
-      this.verifyFinals();
-      this.loadMatches();
-      if(this.season.champion){
-        this.isFinished = true;
-      }
-    })
+    this.loadInit();
   }
 
   loadMatches(){
@@ -109,26 +119,69 @@ export class TournamentComponent implements OnInit {
     }
   }
 
-  chargeChampionDivision(){
-    const processedDivisions = new Set(); 
-    this.listTeams.forEach(team => {
-      if (!processedDivisions.has(team.division)) {
-        this.teamService.getTeamByName(team.name).subscribe(data => {
-          this.teamService.updateDivision(data.teamId).subscribe();
-          processedDivisions.add(team.division);
-        })
+  async chargeChampionDivision(){
+    let atlantic = false;
+    let central = false;
+    let southeast = false;
+    let northwest = false;
+    let pacific = false;
+    let southwest = false;
+
+    for(let team of this.listTeams){
+      if(team.division === 'Atlantic'){
+        if(!atlantic){
+          atlantic = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
+      }else if(team.division === 'Central'){
+        if(!central){
+          central = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
+      }else if(team.division === 'Southeast'){
+        if(!southeast){
+          southeast = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
+      }else if(team.division === 'Northwest'){
+        if(!northwest){
+          northwest = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
+      }else if(team.division === 'Southwest'){
+        if(!southwest){
+          southwest = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
+      }else if(team.division === 'Pacific'){
+        if(!pacific){
+          pacific = true;
+          const teamupdate = await this.getTeamByNameAsync(this.teamService, team.name);
+          await this.updateDivision(this.teamService, teamupdate.teamId);
+        }
       }
-    })
+      if(atlantic && central && southeast && northwest && pacific && southwest){
+        break;
+      }
+    }
+    
   }
 
   async start(){
     this.listTeams = await nbaTournament(this.eastTeams, this.westTeams);
 
-    this.listTeams.forEach(team => {
-      this.seasonTeamService.updateTeam(team.seasonTeamId, team).subscribe()
-    });
+    await Promise.all(this.listTeams.map(team =>
+      new Promise((resolve) => this.seasonTeamService.updateTeam(team.seasonTeamId, team).subscribe(() => resolve(team)))
+    ));
 
-    this.chargeChampionDivision();
+    this.loadDivision = true;
+
+    this.loadTeams();
 
     this.verifyPlayIn();
   }
@@ -434,9 +487,37 @@ export class TournamentComponent implements OnInit {
         numgame++;
       }
 
-      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
+      await this.updateWins(this.serieService, serie.serieId, winsTeam1, winsTeam2);
 
       // Finish Conferences
+  }
+
+
+  async updateWins(serieService: SerieService, serieId:number, winsTeam1:number, winsTeam2:number):Promise<Serie>{
+    return new Promise ((resolve, reject) => {
+      serieService.updateWins(serieId, winsTeam1, winsTeam2).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
+  }
+
+  async updateDivision(teamService: TeamService, id: number): Promise<Team>{
+    return new Promise((resolve, reject) => {
+      teamService.updateDivision(id).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
+  }
+
+  async getSeasonByIdAsync(seasonService: SeasonService, id: number): Promise<Season> {
+    return new Promise((resolve, reject) => {
+      seasonService.getSeasonById(id).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
   }
 
   async getTeamByNameAsync(teamService: TeamService, name: string): Promise<Team> {
@@ -460,6 +541,15 @@ export class TournamentComponent implements OnInit {
   async createSerieAsync(serieService: SerieService, serie: Serie): Promise<Serie> {
     return new Promise((resolve, reject) => {
       serieService.addSerie(serie).subscribe({
+        next: resolve,
+        error: reject
+      });
+    });
+  }
+
+  async addChampionAsync(seasonService: SeasonService, seasonId: number, team1Id: number, team2Id:number): Promise<Season> {
+    return new Promise((resolve, reject) => {
+      seasonService.addChampion(seasonId, team1Id, team2Id).subscribe({
         next: resolve,
         error: reject
       });
@@ -558,25 +648,14 @@ export class TournamentComponent implements OnInit {
   }
 
   async generatePlayOffs(topEastTeams: SeasonTeam[], topWestTeams: SeasonTeam[]){
-    try {
-      await this.PlayOffTeams(topEastTeams);
-      console.log('PlayOffs for East Teams finished');
-    } catch (error) {
-      console.error('Error generating playoffs for East Teams:', error);
-    }
-  
-    try {
-      await this.PlayOffTeams(topWestTeams);
-      console.log('PlayOffs for West Teams finished');
-    } catch (error) {
-      console.error('Error generating playoffs for West Teams:', error);
-    }
+    await this.PlayOffTeams(topEastTeams);
+    await this.PlayOffTeams(topWestTeams);
     this.loadTeams();
-
   }
 
   startPlayIn(){
 
+    this.loadDivision = false;
     const playInEast = this.eastTeams.slice(6, 10);
     const playInWest = this.westTeams.slice(6, 10);
 
@@ -591,6 +670,7 @@ export class TournamentComponent implements OnInit {
 
   startPlayOffs(){
     
+    this.loadDivision = false;
     const topEastTeams = this.eastTeams.slice(0, 6);
     const topWestTeams = this.westTeams.slice(0, 6);
 
@@ -608,6 +688,7 @@ export class TournamentComponent implements OnInit {
   }
 
   startNBAfinals(){
+    this.loadDivision = false;
     this.finals();
     this.isFinished = true;
     this.cdr.detectChanges();
@@ -646,6 +727,7 @@ export class TournamentComponent implements OnInit {
         winsVisitor: 0,
         phase: 5
       }
+
       let serie = await this.createSerieAsync(this.serieService, newserie)
 
       let numgame = 1;
@@ -687,18 +769,18 @@ export class TournamentComponent implements OnInit {
         if(winsTeam1 === 4){
           if(team1 && team2){
             this.teamService.updateChampion(team1.teamId).subscribe();
-            this.seasonService.addChampion(this.seasonId, team1.teamId, team2.teamId).subscribe();
+            await this.addChampionAsync(this.seasonService, this.seasonId, team1.teamId, team2.teamId);
           }
         }else if(winsTeam2 === 4){
           if(team1 && team2){
             this.teamService.updateChampion(team2.teamId).subscribe();
-            this.seasonService.addChampion(this.seasonId, team2.teamId, team1.teamId).subscribe();
+            await this.addChampionAsync(this.seasonService, this.seasonId, team2.teamId, team1.teamId);
           }
         }
 
         numgame++;
       }
-      this.serieService.updateWins(serie.serieId, winsTeam1, winsTeam2).subscribe();
+      await this.updateWins(this.serieService, serie.serieId, winsTeam1, winsTeam2);
   }
 
   ngOnInit() {

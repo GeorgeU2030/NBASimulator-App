@@ -1,0 +1,59 @@
+<div class="min-h-screen bg-slate-100">
+    <nav class="flex justify-center bg-yellow-500">
+        <div class="flex items-center justify-center">
+            <img src="/nba.ico" class="w-18 h-20"/>
+            <h1 class="text-primary bg-slate-100 rounded-lg px-3 py-1">Champions</h1>
+        </div>
+    </nav>
+
+    @if(teams){
+    <div>
+        @if(teams.length == 0){
+            <div class="flex justify-center items-center h-96 mt-4">
+                <p class="text-primary font-semibold text-2xl">No champions yet</p>
+            </div>
+        }@else {
+            <div class="flex flex-col justify-center items-center mb-6">
+                <div class="w-5/6 overflow-auto overflow-y-auto max-h-[100vh]">
+                    <table class="mt-5 w-full ">
+                        <thead>
+                            <tr>
+                                <th class="min-w-24 bg-primary text-white text-lg h-12"></th>
+                                <th class="min-w-60 bg-primary text-white text-lg h-12">Team</th>
+                                <th class="min-w-20 bg-primary text-white text-lg h-12">Titles</th>
+                                <th class="min-w-12 bg-primary text-white text-lg h-12"></th>
+                                <th class="min-w-32 bg-primary text-white text-lg h-12">Editions</th>
+                                <th class="min-w-12 bg-primary text-white text-base md:text-lg h-12">Conference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                @for(team of teams; track team.team.teamId){
+                                    <tr class="h-16 bg-yellow-200 ">
+                                    <td class="text-center text-2xl text-primary font-bold">
+                                        <img [src]="team.team.logo" alt="Logo Team" class="w-12 h-12">
+                                    </td>
+                                    <td class="text-center font-semibold">{{team.team.name}}</td>
+                                    <td class="text-primary text-xl font-bold text-center">{{team.team.rings}}</td>
+                                    <td class="text-center">
+                                        <img src="https://i.pinimg.com/originals/50/58/c4/5058c4f3aab6aa3cad67c50ceaeb0bca.gif" alt="Logo Team" class="w-8 h-12">
+                                    </td>
+                                    <td>
+                                        <div class="flex justify-center">
+                                        @for(edition of team.championshipEditions; track $index; let last = $last){
+                                            <h4>{{edition}} @if(!last){<span>,</span>}</h4>
+                                        }
+                                        </div>
+                                        
+                                    </td>
+
+                                    <td class="text-center"><h3>{{team.team.titlesConference}}</h3></td>
+                                    </tr>
+                                }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    }
+</div>

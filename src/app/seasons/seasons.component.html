@@ -16,8 +16,8 @@
             </div>
         }
         @else {
-            <div class="flex flex-col justify-center items-center">
-                <div class="w-5/6 overflow-auto">
+            <div class="flex flex-col justify-center items-center mb-6">
+                <div class="w-5/6 overflow-auto overflow-y-auto max-h-[100vh]">
                     <table class="mt-5 w-full ">
                         <thead>
                             <tr>
@@ -37,7 +37,7 @@
                                     
                                     @if(season.champion){
                                         <td class="flex justify-center items-center mt-1"><img [src]="season.champion.logo" alt="Logo Winner" class="w-12 h-12"></td>
-                                        <td class="text-center">{{season.champion.name}} ({{season.champion.rings}})</td>
+                                        <td class="text-center">{{season.champion.name}}</td>
                                     }
                                     @else{
                                         <td class="flex justify-center items-center mt-1"><img src="/interrogant.png" class="w-12 h-12 mt-1"/></td>

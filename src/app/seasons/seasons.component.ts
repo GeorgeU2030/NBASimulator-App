@@ -37,7 +37,7 @@ export class SeasonsComponent implements OnInit {
     let lastEdition;
 
     if(this.listSeasons.length > 0){
-      lastEdition = this.listSeasons[this.listSeasons.length - 1].edition;
+      lastEdition = this.listSeasons[0].edition;
       edition = lastEdition + 1;
     } else {
       edition = 1;
