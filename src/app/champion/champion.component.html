@@ -40,7 +40,7 @@
                                     <td>
                                         <div class="flex justify-center">
                                         @for(edition of team.championshipEditions; track $index; let last = $last){
-                                            <h4>{{edition}} @if(!last){<span>,</span>}</h4>
+                                            <h4>{{edition}}@if(!last){<span>, </span>} </h4>
                                         }
                                         </div>
                                         
